@@ -40,6 +40,7 @@ logic               wb_cyc_o;  // transaction cycle in progress
 logic [3:0]         wb_sel_o;  // select where the data on the data bus (8-bit granularity assumed)
 logic               wb_stb_o;  // strobe out, valid data transfer. Slave responds with ack, err or retry to assertion
 logic               wb_gnt_i;  // Bus granted by interconnect
+logic [31:0]        data;
 
 // local variables to wishbone bus (just dont want to rewrite everything ':D)
 assign wb_dat_i     = wb_bus.wb_dat_sm;
@@ -59,6 +60,8 @@ assign wb_bus.wb_tgd_ms  = 'b0;
 assign wb_bus.wb_adr     = addr_i;
 assign wb_bus.wb_tga     = 'b0;
 
+assign data_o = data;
+
 // State machine for wb master
 always_comb
 begin
@@ -68,6 +71,8 @@ begin
     valid_o = 1'b0;
     wb_stb_o = 1'b0;
     wb_sel_o = 4'b0;
+
+    data = 'b0;
 
     case(CS)
         IDLE: begin
@@ -82,7 +87,7 @@ begin
             if(wb_gnt_i) begin
                 wb_stb_o = 1'b1;
                 wb_sel_o = 4'b1111;
-                data_o   = wb_dat_i;
+                data     = wb_dat_i;
                 if(wb_ack_i) begin
                     valid_o = 1'b1;
                     if(!read_i)
