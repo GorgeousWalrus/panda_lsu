@@ -40,6 +40,7 @@ logic               wb_cyc_o;  // transaction cycle in progress
 logic [3:0]         wb_sel_o;  // select where the data on the data bus (8-bit granularity assumed)
 logic               wb_stb_o;  // strobe out, valid data transfer. Slave responds with ack, err or retry to assertion
 logic               wb_gnt_i;  // Bus granted by interconnect
+logic               wb_lock;   // Lock the interconnect
 logic [31:0]        data;
 
 // local variables to wishbone bus (just dont want to rewrite everything ':D)
@@ -52,7 +53,7 @@ assign wb_gnt_i     = wb_bus.wb_gnt;
 assign wb_bus.wb_sel     = wb_sel_o;
 assign wb_bus.wb_stb     = wb_stb_o;
 assign wb_bus.wb_we      = 'b0;
-assign wb_bus.wb_lock    = 'b0;
+assign wb_bus.wb_lock    = wb_lock;
 assign wb_bus.wb_cyc     = wb_cyc_o;
 assign wb_bus.wb_tgc     = 'b0;
 assign wb_bus.wb_dat_ms  = 'b0;
@@ -71,6 +72,7 @@ begin
     valid_o = 1'b0;
     wb_stb_o = 1'b0;
     wb_sel_o = 4'b0;
+    wb_lock  = 1'b0;
 
     data = 'b0;
 
